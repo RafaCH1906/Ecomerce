@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy==1.4.46
+psycopg2-binary
+pydantic<2
+greenlet>=3.0.0
+python-dotenv
+email-validator
+
