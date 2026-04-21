@@ -1,0 +1,120 @@
+openapi: 3.0.0
+info:
+  title: Orders Service API
+  version: 1.0.0
+  description: API para gestionar órdenes en el sistema e-commerce
+servers:
+  - url: http://localhost:3003
+paths:
+  /api/orders:
+    get:
+      summary: Obtiene todas las órdenes
+      responses:
+        '200':
+          description: Lista de órdenes
+    post:
+      summary: Crea una nueva orden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '201':
+          description: Orden creada
+  /api/orders/{id}:
+    get:
+      summary: Obtiene una orden por su ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalles de la orden
+    delete:
+      summary: Elimina una orden
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Orden eliminada
+  /api/orders/{id}/status:
+    patch:
+      summary: Actualiza el estado de una orden
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                estado:
+                  type: string
+                  enum: [pendiente, completado, cancelado]
+      responses:
+        '200':
+          description: Estado actualizado
+  /api/orders/user/{user_id}:
+    get:
+      summary: Obtiene las órdenes de un usuario específico
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de órdenes del usuario
+components:
+  schemas:
+    OrderInput:
+      type: object
+      required:
+        - user_id
+        - productos
+        - direccion_envio
+      properties:
+        user_id:
+          type: integer
+        estado:
+          type: string
+          enum: [pendiente, completado, cancelado]
+        productos:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: string
+              nombre:
+                type: string
+              precio_unitario:
+                type: number
+              cantidad:
+                type: integer
+        direccion_envio:
+          type: object
+          properties:
+            direccion:
+              type: string
+            ciudad:
+              type: string
+            pais:
+              type: string
+            codigo_postal:
+              type: string

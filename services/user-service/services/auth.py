@@ -4,11 +4,13 @@ import jwt
 import bcrypt
 from dotenv import load_dotenv
 
-load_dotenv()
+# Cargar el archivo .env explícitamente desde la raíz del servicio
+env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+load_dotenv(dotenv_path=env_path)
 
-# Clave secreta (idéntica a products-service)
-# Se espera que se defina JWT_SECRET en el .env local de este microservicio
 SECRET_KEY = os.getenv("JWT_SECRET")
+if not SECRET_KEY:
+    raise ValueError("Error: JWT_SECRET no está configurada en el archivo .env")
 ALGORITHM = "HS512"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 # 24 horas
 

@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 sqlalchemy>=2.0
-psycopg[binary]
+psycopg2-binary
 pydantic>=2
 greenlet>=3.0.0
 python-dotenv

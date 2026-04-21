@@ -22,11 +22,8 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email ya registrado")
     return user_service.create_user(db=db, user=user)
 
-@router.get("/{user_id}", response_model=UserResponse, summary="Obtener usuario por ID", description="Retorna los detalles de un usuario específico. El usuario debe ser el propietario de la cuenta o un administrador.")
-def read_user(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if current_user.role not in ["admin", "superadmin"] and current_user.id != user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes permiso para ver este perfil")
-        
+@router.get("/{user_id}", response_model=UserResponse, summary="Obtener usuario por ID", description="Retorna los detalles de un usuario específico. Endpoint público para permitir validación entre servicios.")
+def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = user_service.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
