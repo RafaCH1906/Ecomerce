@@ -12,6 +12,7 @@ class User(Base):
     password = Column(String)
     telefono = Column(String, nullable=True)
     activo = Column(Boolean, default=True)
+    role = Column(String, default="user")
     created_at = Column(DateTime, default=datetime.utcnow)
 
     addresses = relationship("Address", back_populates="owner", cascade="all, delete-orphan")

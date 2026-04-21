@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from models import user as md_user
 from schemas import user as sc_user
+from services.auth import get_password_hash
 
 def get_user(db: Session, user_id: int):
     return db.query(md_user.User).filter(md_user.User.id == user_id).first()
@@ -9,16 +10,19 @@ def get_user_by_email(db: Session, email: str):
     return db.query(md_user.User).filter(md_user.User.email == email).first()
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(md_user.User).offset(skip).limit(limit).all()
+    # Excluye a los superadmin de los resultados públicos
+    return db.query(md_user.User).filter(md_user.User.role != "superadmin").offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: sc_user.UserCreate):
-    # En producción: hashear password!
+    # Hashea la contraseña antes de guardarla
+    hashed_password = get_password_hash(user.password)
     db_user = md_user.User(
         nombre=user.nombre,
         email=user.email,
-        password=user.password, # hash needed
+        password=hashed_password,
         telefono=user.telefono,
-        activo=user.activo
+        activo=user.activo,
+        role=user.role
     )
     db.add(db_user)
     db.commit()

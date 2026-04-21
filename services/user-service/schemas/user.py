@@ -8,6 +8,7 @@ class UserBase(BaseModel):
     email: EmailStr
     telefono: Optional[str] = None
     activo: bool = True
+    role: str = "user"
 
 class UserCreate(UserBase):
     password: str
