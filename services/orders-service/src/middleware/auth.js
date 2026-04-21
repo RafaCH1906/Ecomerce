@@ -12,10 +12,11 @@ const auth = (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified; // Guardamos los datos del usuario (id, role, sub) en la petición
+    const verified = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS512'] });
+    req.user = verified;
     next();
   } catch (error) {
+    console.error('ERROR DE AUTENTICACIÓN EN ÓRDENES:', error.message);
     res.status(401).json({ message: 'Token no válido o expirado.' });
   }
 };

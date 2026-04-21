@@ -23,8 +23,8 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Creamos la carga útil asegurando las variables esperadas por products-service (userId y sub)
+    # Creamos la carga útil asegurando las variables esperadas por los otros servicios
     access_token = create_access_token(
-        data={"sub": user.nombre, "userId": user.id}
+        data={"sub": user.nombre, "userId": user.id, "role": user.role}
     )
     return {"access_token": access_token, "token_type": "bearer"}

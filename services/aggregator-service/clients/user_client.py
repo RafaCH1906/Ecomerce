@@ -1,0 +1,18 @@
+import httpx
+import os
+from fastapi import HTTPException
+
+class UserClient:
+    def __init__(self):
+        self.base_url = os.getenv("USERS_SERVICE_URL")
+
+    async def get_user_profile(self, user_id: int):
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(f"{self.base_url}/{user_id}")
+                if response.status_code == 404:
+                    return None
+                response.raise_for_status()
+                return response.json()
+            except httpx.HTTPError as e:
+                raise HTTPException(status_code=502, detail=f"Error conectando con User Service: {str(e)}")

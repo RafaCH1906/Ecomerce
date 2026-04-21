@@ -114,3 +114,4 @@ dist
 # Windows
 Thumbs.db
 .node_modules
+node_modules
