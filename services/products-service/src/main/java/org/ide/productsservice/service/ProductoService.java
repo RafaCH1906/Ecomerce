@@ -51,6 +51,7 @@ public class ProductoService {
                 .stock(productoDTO.getStock())
                 .activo(true)
                 .categoria(categoria)
+                .imageUrl(productoDTO.getImageUrl())
                 .build();
 
         Producto productoGuardado = productoRepository.save(producto);
@@ -94,6 +95,14 @@ public class ProductoService {
         productoRepository.save(producto);
     }
 
+    public ProductoDTO actualizarImagen(Long id, String imageUrl) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con ID: " + id));
+        producto.setImageUrl(imageUrl);
+        Producto productoActualizado = productoRepository.save(producto);
+        return convertToDTO(productoActualizado);
+    }
+
     private ProductoDTO convertToDTO(Producto producto) {
         return ProductoDTO.builder()
                 .id(producto.getId())
@@ -103,6 +112,7 @@ public class ProductoService {
                 .stock(producto.getStock())
                 .activo(producto.getActivo())
                 .categoriaId(producto.getCategoria().getId())
+                .imageUrl(producto.getImageUrl())
                 .build();
     }
 }

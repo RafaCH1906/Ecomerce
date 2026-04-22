@@ -13,7 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
+import org.ide.productsservice.service.S3Service;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/products")
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductoController {
 
     private final ProductoService productoService;
+    private final S3Service s3Service;
 
     @GetMapping
     @Operation(summary = "Obtener todos los productos con paginación",
@@ -85,6 +89,18 @@ public class ProductoController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         productoService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/upload-image")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Subir imagen de producto a S3",
+            description = "Sube una imagen a S3 y actualiza la URL del producto. Requiere token JWT.")
+    public ResponseEntity<ProductoDTO> subirImagen(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        String imageUrl = s3Service.uploadFile(file);
+        ProductoDTO productoActualizado = productoService.actualizarImagen(id, imageUrl);
+        return ResponseEntity.ok(productoActualizado);
     }
 }
 

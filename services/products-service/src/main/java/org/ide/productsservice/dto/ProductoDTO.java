@@ -33,5 +33,7 @@ public class ProductoDTO {
 
     @NotNull(message = "La categoría ID no puede ser nulo")
     private Long categoriaId;
+
+    private String imageUrl;
 }
 
