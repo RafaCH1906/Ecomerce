@@ -119,11 +119,14 @@ Representa una dirección física asociada a un usuario.
 
 ## Instalación y Ejecución
 
-### 1. Levantar PostgreSQL con Docker
+### 1. Levantar PostgreSQL con Docker Compose
+
+Es la opción recomendada para evitar conflictos de puertos en Windows:
 
 ```bash
-docker run --name ecommerce_db -e POSTGRES_USER=usuario -e POSTGRES_PASSWORD=password -e POSTGRES_DB=ecommerce_bd -p 5432:5432 -d postgres
+docker-compose up -d
 ```
+*Nota: Se usa el puerto **5433** para evitar conflictos con servicios nativos de Windows.*
 
 ---
 
@@ -167,10 +170,10 @@ pip install fastapi uvicorn sqlalchemy psycopg2-binary
 
 ### 4. Configurar Base de Datos
 
-Configura la variable:
+Configura la variable en tu archivo `.env`:
 
 ```bash
-DATABASE_URL=postgresql://usuario:password@localhost/ecommerce_bd
+DATABASE_URL=postgresql://usuario:password@localhost:5433/ecommerce_bd
 ```
 
 ---
