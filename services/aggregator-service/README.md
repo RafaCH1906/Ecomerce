@@ -16,25 +16,45 @@ Microservicio encargado de orquestar y consolidar la información de los servici
 
 ## Cómo correr el proyecto (Instalación limpia)
 
-1.  **Crear entorno virtual**:
+
+### ⚠️ Importante: Usa siempre el Python de Windows
+
+No uses MSYS2, Git Bash ni terminales de MinGW para crear el entorno virtual ni instalar dependencias. Usa **PowerShell** o **CMD** de Windows y asegúrate de que el comando `python` apunte a la instalación oficial de Windows (puedes verificar con `python --version`).
+
+Si tienes problemas con dependencias como `pydantic-core` o `uvicorn`, sigue estos pasos:
+
+1. **Borra la carpeta `venv` si existe:**
+    ```powershell
+    Remove-Item -Recurse -Force venv
+    ```
+2. **Cierra todas las terminales MSYS2/Git Bash. Abre una nueva PowerShell.**
+3. **Crea el entorno virtual:**
     ```powershell
     python -m venv venv
     ```
-2.  **Activar entorno**:
-    *   Windows: `.\venv\Scripts\activate`
-    *   Linux/macOS: `source venv/bin/activate`
-3.  **Actualizar PIP (Crucial)**:
+4. **Activa el entorno virtual:**
     ```powershell
-    python -m pip install --upgrade pip
+    .\venv\Scripts\activate
     ```
-4.  **Instalar dependencias**:
+5. **Actualiza pip y wheel:**
+    ```powershell
+    python -m pip install --upgrade pip setuptools wheel
+    ```
+6. **Instala dependencias:**
     ```powershell
     pip install -r requirements.txt
     ```
-5.  **Ejecutar**:
+   Si falla con pydantic, instala una versión compatible:
+    ```powershell
+    pip install pydantic==2.6.4
+    pip install fastapi uvicorn httpx python-dotenv python-multipart PyJWT
+    ```
+7. **Ejecuta el servicio:**
     ```powershell
     python main.py
     ```
+
+---
 
 ## Configuración (.env)
 Crea un archivo `.env` basado en el secreto compartido del sistema:

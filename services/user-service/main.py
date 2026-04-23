@@ -13,7 +13,18 @@ from sqlalchemy import text
 # Crear tablas en caso de no usar Alembic
 Base.metadata.create_all(bind=engine)
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="Users Service", description="Microservicio de usuarios y direcciones con Auth integrada")
+
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def startup_event():
