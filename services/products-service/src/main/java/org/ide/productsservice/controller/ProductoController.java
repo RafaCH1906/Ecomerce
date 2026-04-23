@@ -20,7 +20,6 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Tag(name = "Productos", description = "API para gestionar productos")
 public class ProductoController {
