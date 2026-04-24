@@ -9,11 +9,18 @@ const path = require('path');
 
 const app = express();
 
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
 // Conectar a la base de datos
 connectDB();
 
 // Middlewares
-app.use(cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Swagger setup (opcional pero recomendado como pediste)
