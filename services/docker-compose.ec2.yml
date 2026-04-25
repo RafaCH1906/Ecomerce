@@ -1,55 +1,4 @@
 services:
-  users-db:
-    image: postgres:15-alpine
-    container_name: users-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${USERS_DB_USER}
-      POSTGRES_PASSWORD: ${USERS_DB_PASSWORD}
-      POSTGRES_DB: ${USERS_DB_NAME}
-    ports:
-      - "5433:5432"
-    volumes:
-      - users_postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${USERS_DB_USER} -d ${USERS_DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  products-db:
-    image: mysql:8.0
-    container_name: products-db
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${PRODUCTS_DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${PRODUCTS_DB_NAME}
-      MYSQL_USER: ${PRODUCTS_DB_USER}
-      MYSQL_PASSWORD: ${PRODUCTS_DB_PASSWORD}
-    ports:
-      - "3306:3306"
-    volumes:
-      - products_mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${PRODUCTS_DB_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  orders-db:
-    image: mongo:6.0
-    container_name: orders-db
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    volumes:
-      - orders_mongo_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
   users-service:
     build:
       context: ./user-service
@@ -57,11 +6,8 @@ services:
     container_name: users-service
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://${USERS_DB_USER}:${USERS_DB_PASSWORD}@users-db:5432/${USERS_DB_NAME}?client_encoding=utf8
+      DATABASE_URL: postgresql://${USERS_DB_USER}:${USERS_DB_PASSWORD}@${USERS_DB_HOST}:${USERS_DB_PORT}/${USERS_DB_NAME}?client_encoding=utf8
       JWT_SECRET: ${JWT_SECRET}
-    depends_on:
-      users-db:
-        condition: service_healthy
     ports:
       - "8000:8000"
 
@@ -72,8 +18,8 @@ services:
     container_name: products-service
     restart: unless-stopped
     environment:
-      DB_HOST: products-db
-      DB_PORT: 3306
+      DB_HOST: ${PRODUCTS_DB_HOST}
+      DB_PORT: ${PRODUCTS_DB_PORT}
       DB_NAME: ${PRODUCTS_DB_NAME}
       DB_USERNAME: ${PRODUCTS_DB_USER}
       DB_PASSWORD: ${PRODUCTS_DB_PASSWORD}
@@ -85,9 +31,6 @@ services:
       AWS_REGION: ${AWS_REGION}
       S3_BUCKET: ${S3_BUCKET}
       S3_FOLDER: ${S3_FOLDER}
-    depends_on:
-      products-db:
-        condition: service_healthy
     ports:
       - "8081:8081"
 
@@ -99,13 +42,11 @@ services:
     restart: unless-stopped
     environment:
       PORT: 3003
-      MONGO_URI: mongodb://orders-db:27017/orders_db
+      MONGO_URI: mongodb://${ORDERS_DB_HOST}:${ORDERS_DB_PORT}/${ORDERS_DB_NAME}
       USER_SERVICE_URL: http://users-service:8000/api/users
       PRODUCT_SERVICE_URL: http://products-service:8081/api/products
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
-      orders-db:
-        condition: service_healthy
       users-service:
         condition: service_started
       products-service:
@@ -154,8 +95,3 @@ services:
         condition: service_started
     ports:
       - "8006:8006"
-
-volumes:
-  users_postgres_data:
-  products_mysql_data:
-  orders_mongo_data:

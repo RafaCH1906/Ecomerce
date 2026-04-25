@@ -1,0 +1,56 @@
+services:
+  users-db:
+    image: postgres:15-alpine
+    container_name: users-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${USERS_DB_USER}
+      POSTGRES_PASSWORD: ${USERS_DB_PASSWORD}
+      POSTGRES_DB: ${USERS_DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - users_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${USERS_DB_USER} -d ${USERS_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  products-db:
+    image: mysql:8.0
+    container_name: products-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${PRODUCTS_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PRODUCTS_DB_NAME}
+      MYSQL_USER: ${PRODUCTS_DB_USER}
+      MYSQL_PASSWORD: ${PRODUCTS_DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - products_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${PRODUCTS_DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  orders-db:
+    image: mongo:6.0
+    container_name: orders-db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - orders_mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  users_postgres_data:
+  products_mysql_data:
+  orders_mongo_data:
