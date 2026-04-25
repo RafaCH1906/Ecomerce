@@ -10,7 +10,11 @@ const path = require('path');
 const app = express();
 
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://ecommerce-front-1.s3-website-us-east-1.amazonaws.com',
+  ],
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
